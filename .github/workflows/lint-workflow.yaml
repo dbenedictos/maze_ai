@@ -5,6 +5,9 @@
 
 name: Lint Checks
 
+permissions:
+  pull-requests: write
+
 on:
   pull_request:
     branches: ['**']
