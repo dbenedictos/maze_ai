@@ -1,0 +1,48 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Lint Checks
+
+on:
+  pull_request:
+    branches: ['**']
+
+jobs:
+  tests:
+    name: flutter analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get FVM Config
+        id: fvm_config
+        uses: zoexx/github-action-json-file-properties@release
+        with:
+          file_path: ".fvm/fvm_config.json"
+
+      - name: Install flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm_config.outputs.flutterSdkVersion }}
+          channel: stable
+          cache: true
+          architecture: x64
+
+      - name: Install packages and analyze
+        run: |
+          flutter pub get
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter analyze > flutter_analyze_report.txt
+
+      - name: Comment PR
+        if: ${{ failure() }} || ${{ success() }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: "lints"
+          hide_and_recreate: true
+          hide_classify: "OUTDATED"
+          path: flutter_analyze_report.txt
