@@ -4,8 +4,6 @@ import 'dart:ui';
 import 'package:maze_ai/utilities/contants.dart';
 import 'package:vector_math/vector_math.dart';
 
-typedef Position = ({double x, double y});
-
 class Brain {
   Brain();
 

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:dartx/dartx.dart';
+import 'package:maze_ai/models/area.dart';
 import 'package:maze_ai/models/dot.dart';
 import 'package:maze_ai/utilities/contants.dart';
 import 'package:vector_math/vector_math.dart';
@@ -11,12 +12,14 @@ class Population {
     required this.count,
     required this.goal,
     required Vector2 startingPosition,
+    required List<Area> areas,
   }) {
     _dots = List.generate(
       dotCount,
       (index) => Dot(
         goal: goal,
         startingPosition: startingPosition,
+        areas: areas,
       ),
     );
   }
@@ -31,6 +34,7 @@ class Population {
   int minStepCount = minStepCounts;
   double fitnessSum = 0;
   double successRate = 0.0;
+  int generationSuccess = 0;
 
   List<Dot> get dots => List.from(_dots, growable: false);
 
@@ -43,6 +47,8 @@ class Population {
   bool get areAllDotsFinished => _dots.all((dot) => dot.isDead || dot.didReachGoal);
 
   void calculateSuccessRate() => successRate = _dots.count((dot) => dot.didReachGoal) / dotCount;
+
+  void setGenerationSuccess() => generationSuccess = finishedDots > 0 ? generationCount : 0;
 
   void move() {
     for (Dot dot in _dots) {
@@ -76,6 +82,7 @@ class Population {
     return Dot(
       goal: goal,
       startingPosition: Vector2.zero(),
+      areas: List.empty(),
     );
   }
 
