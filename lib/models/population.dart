@@ -46,7 +46,7 @@ class Population {
 
   void move() {
     for (Dot dot in _dots) {
-      if (dot.steps == minStepCount) {
+      if (dot.steps == minStepCount + 100) {
         dot.isDead = true;
       } else {
         dot.move();

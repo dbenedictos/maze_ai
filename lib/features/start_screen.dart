@@ -65,7 +65,7 @@ class _StartScreenState extends State<StartScreen> {
       body: Column(
         children: [
           Text('Generation: ${population.generationCount}'),
-          Text('Success Rate: ${(population.successRate * 100).toStringAsFixed(2)}'),
+          Text('Success Rate: ${(population.successRate * 100).toStringAsFixed(2)}%'),
           Text('Alive Dots: ${population.aliveDots}'),
           Text('Dead Dots: ${population.deadDots}'),
           Text('Finished Dots: ${population.finishedDots}'),
