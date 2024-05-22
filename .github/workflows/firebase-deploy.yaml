@@ -31,8 +31,9 @@ jobs:
       - name: Install packages
         run: |
           flutter pub get
-          flutter packages pub run build_runner build --delete-conflicting-outputs
-          flutter build web
+          flutter build web --wasm
+#          flutter dart run build_runner build --delete-conflicting-outputs
+
 
       - name: Deploy to firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
