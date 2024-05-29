@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:maze_ai/features/classes/environment.dart';
 import 'package:maze_ai/models/area.dart';
 import 'package:maze_ai/models/dot.dart';
-import 'package:maze_ai/utilities/contants.dart';
 import 'package:vector_math/vector_math.dart' as vector;
 
 const _gridInterval = 50;
@@ -36,7 +36,7 @@ class MazePainter extends CustomPainter {
 
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
 
-    canvas.drawCircle(Offset(goal.x, goal.y), goalRadius, dotPaint..color = Colors.red);
+    canvas.drawCircle(Offset(goal.x, goal.y), Environment.goalRadius, dotPaint..color = Colors.red);
 
     if (selectedPoint != null) {
       canvas.drawCircle(selectedPoint!, 7, selectedPaint);
@@ -64,7 +64,7 @@ class MazePainter extends CustomPainter {
         canvas.drawLine(Offset(position.x, position.y), nextCheckPointPosition, linePaint);
       }
 
-      canvas.drawCircle(Offset(position.x, position.y), dotRadius * (dot.isBest ? 2 : 1),
+      canvas.drawCircle(Offset(position.x, position.y), Environment.dotRadius * (dot.isBest ? 2 : 1),
           dotPaint..color = dot.isBest ? Colors.green : dot.color);
       // textPainter.text = TextSpan(
       //   text: '${dot.brain.step}',

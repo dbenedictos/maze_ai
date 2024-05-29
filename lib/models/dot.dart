@@ -2,30 +2,24 @@ import 'dart:math';
 
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
+import 'package:maze_ai/features/classes/environment.dart';
 import 'package:maze_ai/models/area.dart';
 import 'package:maze_ai/models/brain.dart';
-import 'package:maze_ai/utilities/contants.dart';
 import 'package:maze_ai/utilities/extensions.dart';
 import 'package:vector_math/vector_math.dart' as vector;
 
 class Dot {
-  Dot({
-    required this.startingPosition,
-    required this.goal,
-    required this.areas,
-  }) {
-    brain = Brain()..initialize();
+  Dot({required this.environment}) {
+    brain = Brain()..initialize(environment);
     velocity = vector.Vector2.zero();
     acceleration = vector.Vector2.zero();
-    position = startingPosition.clone();
-    obstacles = areas.filter((area) => area.type == Type.OBSTACLE).toList();
-    checkPoints = areas.filter((area) => area.type == Type.CHECK_POINT).toList();
+    position = environment.start.clone(); // clone environment start position to avoid assigning as reference
+    obstacles = environment.areas.filter((area) => area.type == Type.OBSTACLE).toList();
+    checkPoints = environment.areas.filter((area) => area.type == Type.CHECK_POINT).toList();
     nextCheckPoint = checkPoints.firstOrNullWhere((c) => c.checkPointNumber == 1);
   }
 
-  final vector.Vector2 goal;
-  final vector.Vector2 startingPosition;
-  final List<Area> areas;
+  final Environment environment;
 
   late Brain brain;
   late vector.Vector2 velocity;
@@ -36,7 +30,6 @@ class Dot {
 
   bool isDead = false;
   bool didReachGoal = false;
-  // bool didReachCheckPoint = false;
   Area? lastCheckPoint;
   Area? nextCheckPoint;
   bool isBest = false;
@@ -49,17 +42,17 @@ class Dot {
     if (isDead || didReachGoal) return;
 
     // hits goal
-    if (position.distanceTo(goal) < (dotRadius + goalRadius)) {
+    if (position.distanceTo(environment.goal) < (Environment.dotRadius + Environment.goalRadius)) {
       didReachGoal = true;
       color = Colors.deepPurpleAccent;
       return;
     }
 
     // hits borders
-    if (position.x >= size - dotRadius ||
-        position.x <= dotRadius ||
-        position.y >= size - dotRadius ||
-        position.y <= dotRadius) {
+    if (position.x >= Environment.size - Environment.dotRadius ||
+        position.x <= Environment.dotRadius ||
+        position.y >= Environment.size - Environment.dotRadius ||
+        position.y <= Environment.dotRadius) {
       isDead = true;
       color = Colors.red;
       return;
@@ -81,12 +74,8 @@ class Dot {
           nextCheckPoint =
               checkPoints.firstOrNullWhere((c) => c.checkPointNumber == (lastCheckPoint?.checkPointNumber ?? 0) + 1);
         }
-        // checkpointsReached.add(checkPoint);
       }
     }
-    // if (checkpointsReached.isNotEmpty) {
-    //   color = Colors.orange;
-    // }
 
     if (brain.contents.length - 1 >= brain.step) {
       acceleration = brain.contents[brain.step];
@@ -110,34 +99,28 @@ class Dot {
       position.y <= obstacle.top;
 
   void calculateFitness() {
-    final checkpointRDistinct = checkpointsReached.distinct();
-    final lastCheckPointNumber =
-        checkpointRDistinct.sortedBy((e) => e.checkPointNumber ?? 0).lastOrNull?.checkPointNumber ?? 0;
+    if (didReachGoal) {
+      fitness = (1.0 / 16.0) + (10000.0 / (pow(steps, 2)));
+    } else {
+      fitness = 1 / position.distanceToSquared(environment.goal);
+    }
+  }
 
+  /// Work in progress use calculateFitness instead
+  void calculateFitnessV2() {
     if (didReachGoal || lastCheckPoint != null) {
       final distanceToNextCheckPoint = nextCheckPoint != null
           ? position.distanceTo(vector.Vector2(nextCheckPoint!.center.x, nextCheckPoint!.center.y))
           : 1;
       fitness = (1.0 / 16.0) +
           ((10000.0 * (lastCheckPoint?.checkPointNumber ?? 1)) / ((pow(steps, 2))) * distanceToNextCheckPoint);
-    }
-    // else if (lastCheckPointNumber >= 0 && lastCheckPointNumber < checkPoints.length && checkPoints.isNotEmpty) {
-    //   final nextCheckPoint = checkPoints.firstOrNullWhere((e) => e.checkPointNumber == lastCheckPointNumber + 1);
-    //   final distanceToNextCheckPoint =
-    //       position.distanceTo(vector.Vector2(nextCheckPoint!.center.x, nextCheckPoint.center.y));
-    //   fitness = (pow(nextCheckPoint.checkPointNumber!, checkPoints.length) / pow(distanceToNextCheckPoint, 2));
-    // }
-    else {
-      fitness = 1 / position.distanceToSquared(goal);
+    } else {
+      fitness = 1 / position.distanceToSquared(environment.goal);
     }
   }
 
   Dot clone() {
-    Dot clone = Dot(
-      goal: goal,
-      startingPosition: startingPosition,
-      areas: List.from(areas),
-    );
+    Dot clone = Dot(environment: environment);
     clone.brain = Brain.fromBrain(brain);
 
     return clone;

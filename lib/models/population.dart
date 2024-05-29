@@ -2,36 +2,26 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:dartx/dartx.dart';
-import 'package:maze_ai/models/area.dart';
 import 'package:maze_ai/models/dot.dart';
-import 'package:maze_ai/utilities/contants.dart';
-import 'package:vector_math/vector_math.dart';
+
+import '../features/classes/environment.dart';
 
 class Population {
-  Population({
-    required this.count,
-    required this.goal,
-    required Vector2 startingPosition,
-    required List<Area> areas,
-  }) {
+  Population({required this.environment}) {
+    minStepCount = environment.geneCount;
     _dots = List.generate(
-      dotCount,
-      (index) => Dot(
-        goal: goal,
-        startingPosition: startingPosition,
-        areas: areas,
-      ),
+      environment.populationCount,
+      (index) => Dot(environment: environment),
     );
   }
 
-  final int count;
-  final Vector2 goal;
+  final Environment environment;
 
+  late int minStepCount;
   late List<Dot> _dots;
   late Dot bestDot;
 
   int generationCount = 1;
-  int minStepCount = minStepCounts;
   double fitnessSum = 0;
   double successRate = 0.0;
   int generationSuccess = 0;
@@ -46,13 +36,17 @@ class Population {
 
   bool get areAllDotsFinished => _dots.all((dot) => dot.isDead || dot.didReachGoal);
 
-  void calculateSuccessRate() => successRate = _dots.count((dot) => dot.didReachGoal) / dotCount;
+  void calculateSuccessRate() => successRate = _dots.count((dot) => dot.didReachGoal) / environment.populationCount;
 
-  void setGenerationSuccess() => generationSuccess = finishedDots > 0 ? generationCount : 0;
+  void setGenerationSuccess() {
+    if (generationSuccess < 1) {
+      generationSuccess = finishedDots > 0 ? generationCount : 0;
+    }
+  }
 
   void move() {
     for (Dot dot in _dots) {
-      if (dot.steps == minStepCount + 100) {
+      if (dot.steps == minStepCount) {
         dot.isDead = true;
       } else {
         dot.move();
@@ -69,8 +63,6 @@ class Population {
   }
 
   Dot selectParent() {
-    // return bestDot;
-    // return _dots.sortedBy((element) => element.fitness).take(10).elementAt(Random().nextInt(10));
     final fit = lerpDouble(0, fitnessSum * .8, Random().nextDouble())?.toDouble() ?? 0.0;
 
     double runningSum = 0;
@@ -79,13 +71,8 @@ class Population {
       if (runningSum > fit) return dot;
     }
 
-    // dummy return;
-    print("unable to find parent");
-    return Dot(
-      goal: goal,
-      startingPosition: Vector2.zero(),
-      areas: List.empty(),
-    );
+    // dummy return. In theory it should not go pass this point
+    return Dot(environment: environment);
   }
 
   void naturalSelection() {
@@ -93,7 +80,7 @@ class Population {
 
     setBestDot();
 
-    nextGenDots.addAll(List.generate(dotCount, (index) {
+    nextGenDots.addAll(List.generate(environment.populationCount, (index) {
       final parent = selectParent();
       return parent.clone();
     }));
@@ -124,7 +111,5 @@ class Population {
     for (Dot dot in _dots) {
       dot.brain.mutate();
     }
-
-    // _dots.add(bestDot.clone()..isBest = true);
   }
 }

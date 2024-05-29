@@ -52,7 +52,23 @@ class Area {
 
   ({double x, double y}) get center => (x: (right - (right - left) / 2).abs(), y: (top - (top - bottom) / 2).abs());
 
+  String toObjectString() {
+    if (type == Type.OBSTACLE) {
+      return 'Area.obstacle(bottom: $bottom, left: $left, right: $right, top: $top)';
+    }
+
+    return 'Area.checkPoint(bottom: $bottom, left: $left, right: $right, top: $top)';
+  }
+
   static List<Area> generateDefaultAreas() {
+    return [
+      Area.obstacle(bottom: 0, left: 194, right: 206, top: 300),
+      Area.obstacle(bottom: 300, left: 394, right: 406, top: 600),
+    ];
+  }
+
+  // WIP use generateDefaultAreas instead
+  static List<Area> generateDefaultAreasV2() {
     return [
       Area.checkPoint(left: 150, right: 200, top: 200, bottom: 150, checkPointNumber: 1),
       Area.checkPoint(left: 150, right: 200, top: 500, bottom: 450, checkPointNumber: 2),

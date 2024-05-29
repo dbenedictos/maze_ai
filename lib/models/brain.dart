@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:maze_ai/utilities/contants.dart';
+import 'package:maze_ai/features/classes/environment.dart';
 import 'package:vector_math/vector_math.dart';
 
 class Brain {
@@ -13,8 +13,8 @@ class Brain {
 
   late List<Vector2> contents;
 
-  void initialize() {
-    contents = List<Vector2>.generate(initialPositionLength, (index) => generateRandomAccelerationVector());
+  void initialize(Environment environment) {
+    contents = List<Vector2>.generate(environment.geneCount, (index) => generateRandomAccelerationVector());
   }
 
   Vector2 generateRandomAccelerationVector() {
