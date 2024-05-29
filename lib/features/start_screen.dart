@@ -29,6 +29,7 @@ class _StartScreenState extends State<StartScreen> {
 
   bool isSimulationRunning = true;
   bool isGridShown = false;
+  bool isGraphShown = false;
   bool isCreateMode = false;
 
   // WIP: for creation mode
@@ -183,6 +184,14 @@ class _StartScreenState extends State<StartScreen> {
                 //       });
                 //     }),
                 horizontalSpace,
+                Switch(
+                    value: isGraphShown,
+                    onChanged: (value) {
+                      setState(() {
+                        isGraphShown = value;
+                      });
+                    }),
+                horizontalSpace,
                 Slider(
                   value: calculationSerSecond,
                   onChanged: (value) {
@@ -195,7 +204,7 @@ class _StartScreenState extends State<StartScreen> {
                 ),
               ],
             ),
-            if (kDebugMode)
+            if (kDebugMode && isGraphShown)
               Padding(
                 padding: const EdgeInsets.only(
                   right: 16,
