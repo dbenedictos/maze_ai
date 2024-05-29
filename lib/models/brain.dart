@@ -7,14 +7,14 @@ import 'package:vector_math/vector_math.dart';
 class Brain {
   Brain();
 
-  factory Brain.fromBrain(Brain value) => Brain()..contents = List.from(value.contents);
+  factory Brain.fromBrain(Brain value) => Brain()..genes = List.from(value.genes);
 
   int step = 0;
 
-  late List<Vector2> contents;
+  late List<Vector2> genes;
 
   void initialize(Environment environment) {
-    contents = List<Vector2>.generate(environment.geneCount, (index) => generateRandomAccelerationVector());
+    genes = List<Vector2>.generate(environment.geneCount, (index) => generateRandomAccelerationVector());
   }
 
   Vector2 generateRandomAccelerationVector() {
@@ -31,18 +31,18 @@ class Brain {
 
   void mutate() {
     const mutationRate = 0.01; //chance that any acceleration is changed
-    List<Vector2> mutatedContents = List.empty(growable: true);
-    for (int i = 0; i < contents.length; i++) {
+    List<Vector2> mutatedGenes = List.empty(growable: true);
+    for (int i = 0; i < genes.length; i++) {
       final m = Random().nextDouble();
 
       if (m < mutationRate) {
         //add this acceleration as a random acceleration
-        mutatedContents.add(generateRandomAccelerationVector());
+        mutatedGenes.add(generateRandomAccelerationVector());
       } else {
-        mutatedContents.add(contents[i]);
+        mutatedGenes.add(genes[i]);
       }
     }
 
-    contents = mutatedContents;
+    genes = mutatedGenes;
   }
 }
