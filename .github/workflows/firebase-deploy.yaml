@@ -18,12 +18,12 @@ jobs:
         id: fvm_config
         uses: zoexx/github-action-json-file-properties@release
         with:
-          file_path: ".fvm/fvm_config.json"
+          file_path: ".fvmrc"
 
       - name: Install flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ steps.fvm_config.outputs.flutterSdkVersion }}
+          flutter-version: ${{ steps.fvm_config.outputs.flutter }}
           channel: stable
           cache: true
           architecture: x64
