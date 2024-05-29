@@ -36,7 +36,6 @@ class Dot {
   Color color = Colors.black;
 
   double fitness = 0;
-  List<Area> checkpointsReached = [];
 
   void move() {
     if (isDead || didReachGoal) return;
@@ -77,8 +76,8 @@ class Dot {
       }
     }
 
-    if (brain.contents.length - 1 >= brain.step) {
-      acceleration = brain.contents[brain.step];
+    if (brain.genes.length - 1 >= brain.step) {
+      acceleration = brain.genes[brain.step];
       brain.step++;
 
       velocity = velocity..add(acceleration);
