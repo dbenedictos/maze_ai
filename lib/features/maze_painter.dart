@@ -32,6 +32,8 @@ class MazePainter extends CustomPainter {
       ..color = Colors.black
       ..style;
 
+    final linePaint = Paint()..color = Colors.purpleAccent;
+
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
 
     canvas.drawCircle(Offset(goal.x, goal.y), goalRadius, dotPaint..color = Colors.red);
@@ -56,6 +58,12 @@ class MazePainter extends CustomPainter {
 
     for (Dot dot in dots) {
       final position = dot.position;
+      final nextCheckPoint = dot.nextCheckPoint;
+      if (nextCheckPoint != null) {
+        final nextCheckPointPosition = Offset(nextCheckPoint.center.x, nextCheckPoint.center.y);
+        canvas.drawLine(Offset(position.x, position.y), nextCheckPointPosition, linePaint);
+      }
+
       canvas.drawCircle(Offset(position.x, position.y), dotRadius * (dot.isBest ? 2 : 1),
           dotPaint..color = dot.isBest ? Colors.green : dot.color);
       // textPainter.text = TextSpan(

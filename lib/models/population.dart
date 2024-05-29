@@ -69,6 +69,8 @@ class Population {
   }
 
   Dot selectParent() {
+    // return bestDot;
+    // return _dots.sortedBy((element) => element.fitness).take(10).elementAt(Random().nextInt(10));
     final fit = lerpDouble(0, fitnessSum * .8, Random().nextDouble())?.toDouble() ?? 0.0;
 
     double runningSum = 0;
@@ -122,5 +124,7 @@ class Population {
     for (Dot dot in _dots) {
       dot.brain.mutate();
     }
+
+    // _dots.add(bestDot.clone()..isBest = true);
   }
 }

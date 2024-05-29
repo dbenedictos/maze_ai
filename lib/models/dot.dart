@@ -20,6 +20,7 @@ class Dot {
     position = startingPosition.clone();
     obstacles = areas.filter((area) => area.type == Type.OBSTACLE).toList();
     checkPoints = areas.filter((area) => area.type == Type.CHECK_POINT).toList();
+    nextCheckPoint = checkPoints.firstOrNullWhere((c) => c.checkPointNumber == 1);
   }
 
   final vector.Vector2 goal;
@@ -35,6 +36,9 @@ class Dot {
 
   bool isDead = false;
   bool didReachGoal = false;
+  // bool didReachCheckPoint = false;
+  Area? lastCheckPoint;
+  Area? nextCheckPoint;
   bool isBest = false;
   Color color = Colors.black;
 
@@ -71,7 +75,14 @@ class Dot {
     // hits checkPoint;
     for (Area checkPoint in checkPoints) {
       final didCollide = didCollideWithArea(checkPoint);
-      if (didCollide) checkpointsReached.add(checkPoint);
+      if (didCollide) {
+        if ((checkPoint.checkPointNumber ?? 0) > (lastCheckPoint?.checkPointNumber ?? 0)) {
+          lastCheckPoint = checkPoint;
+          nextCheckPoint =
+              checkPoints.firstOrNullWhere((c) => c.checkPointNumber == (lastCheckPoint?.checkPointNumber ?? 0) + 1);
+        }
+        // checkpointsReached.add(checkPoint);
+      }
     }
     // if (checkpointsReached.isNotEmpty) {
     //   color = Colors.orange;
@@ -103,14 +114,20 @@ class Dot {
     final lastCheckPointNumber =
         checkpointRDistinct.sortedBy((e) => e.checkPointNumber ?? 0).lastOrNull?.checkPointNumber ?? 0;
 
-    if (didReachGoal) {
-      fitness = (1.0 / 16.0) + (1000000.0 / (pow(steps, 2)));
-    } else if (lastCheckPointNumber >= 0 && lastCheckPointNumber < checkPoints.length && checkPoints.isNotEmpty) {
-      final nextCheckPoint = checkPoints.firstOrNullWhere((e) => e.checkPointNumber == lastCheckPointNumber + 1);
-      final distanceToNextCheckPoint =
-          position.distanceTo(vector.Vector2(nextCheckPoint!.center.x, nextCheckPoint.center.y));
-      fitness = pow(nextCheckPoint.checkPointNumber!, checkPoints.length) / pow(distanceToNextCheckPoint, 2);
-    } else {
+    if (didReachGoal || lastCheckPoint != null) {
+      final distanceToNextCheckPoint = nextCheckPoint != null
+          ? position.distanceTo(vector.Vector2(nextCheckPoint!.center.x, nextCheckPoint!.center.y))
+          : 1;
+      fitness = (1.0 / 16.0) +
+          ((10000.0 * (lastCheckPoint?.checkPointNumber ?? 1)) / ((pow(steps, 2))) * distanceToNextCheckPoint);
+    }
+    // else if (lastCheckPointNumber >= 0 && lastCheckPointNumber < checkPoints.length && checkPoints.isNotEmpty) {
+    //   final nextCheckPoint = checkPoints.firstOrNullWhere((e) => e.checkPointNumber == lastCheckPointNumber + 1);
+    //   final distanceToNextCheckPoint =
+    //       position.distanceTo(vector.Vector2(nextCheckPoint!.center.x, nextCheckPoint.center.y));
+    //   fitness = (pow(nextCheckPoint.checkPointNumber!, checkPoints.length) / pow(distanceToNextCheckPoint, 2));
+    // }
+    else {
       fitness = 1 / position.distanceToSquared(goal);
     }
   }
