@@ -183,14 +183,16 @@ class _StartScreenState extends State<StartScreen> {
                 //         isGridShown = value;
                 //       });
                 //     }),
-                horizontalSpace,
-                Switch(
-                    value: isGraphShown,
-                    onChanged: (value) {
-                      setState(() {
-                        isGraphShown = value;
-                      });
-                    }),
+                if (kDebugMode) ...[
+                  horizontalSpace,
+                  Switch(
+                      value: isGraphShown,
+                      onChanged: (value) {
+                        setState(() {
+                          isGraphShown = value;
+                        });
+                      }),
+                ],
                 horizontalSpace,
                 Slider(
                   value: calculationSerSecond,
