@@ -1,16 +1,9 @@
 # maze_ai
 
-A new Flutter project.
+A flutter project demonstrating the basics of genetic algorithms. This app solves a simple maze by passing on it's genes (learnings) to the next generation. Each individual in the pospulation is assigned a fitness value. The higher the fitness value every iteration, the higher the chance it get's to pass on it's genes, in other words, reproduce. To have variations, every child is mutated and the process repeats.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+visit https://maze-ai.web.app for the hosted version.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+to run the app locally, use the version of flutter stated in .fvmrc or use any latest compatible version
